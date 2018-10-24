@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+{% load custom_tags %}
+
+{% block head %}
+    {{block.super}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+{% endblock %}
+
+{% block content %}
+    <div class="graph-list">
+        {% for graph in graph_list %}
+        {% build_structure graph as graph%}
+            <div class="graph-list-item">
+                <span class="graph-list-item-name">Graph №{{graph.id}}</span>
+                <div><a id="show_tree" href="#">View as tree</a><a id="show_html" href="#">View as html</a></div>
+                <div class="graph-list-item-tree">
+                    {{ graph|safe }}
+                    <div class="node-info"></div>
+                </div>
+                <div class="graph-xml-like"> </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{block.super}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('.graph-list-item-tree').jstree();
+            $('.graph-list-item-tree').on('ready.jstree', function() {
+                $('.graph-list-item-tree').jstree("open_all");
+            });
+            $('#show_tree').on('click', function(e){
+                e.preventDefault()
+                $('#show_tree').fadeIn();
+                $('#show_html').fadeOut();
+            });
+        });
+    </script>
+{% endblock %}

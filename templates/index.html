@@ -1,0 +1,53 @@
+{% load staticfiles %}
+{% block html %}
+<!DOCTYPE html>
+<html lang="en">
+{% block head %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&amp;subset=cyrillic" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+{% endblock head %}
+<body>
+    <div class="container">
+        <a href="{% url 'index' %}" class="btn">Create Graph</a>
+        <a href="{% url 'graph_list' %}" class="btn">Garph list</a>
+        <div class="content">
+        {% block content %}
+            <div class="form" >
+                <div class="hint">Upload a text file to generate a new graph</div>
+                <form action="{% url 'create_graph' %}" method="POST", enctype="multipart/form-data" class="form-horizontal">
+                    {% csrf_token %}
+                    <div class="from-wrapper">
+                        <a href="#" class="file-btn">Select file</a>
+                        {{ form }}
+                    </div>
+                    <input type="submit" value="Generate Graph" class="btn">
+                </form>
+                {{ message }}
+            </div>
+        {% endblock content %}
+        </div>
+    </div>
+{% block js %}
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.js"
+  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      $(function() {
+         $("input:file").change(function (){
+           $('.file-btn').attr('style', 'border-color: #7ce55aad;');
+         });
+         $('.file-btn').on('click', function(e){
+            e.preventDefault()
+            $('input:file').trigger('click');
+         })
+      });
+    </script>
+{% endblock js %}
+</body>
+</html>
+{% endblock html %}
