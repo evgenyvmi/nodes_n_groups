@@ -1,8 +1,8 @@
 from django.shortcuts import render, reverse, HttpResponseRedirect, Http404
 from .forms import UploadGraphForm
 from .models import *
-import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup as bs
+from django.http import JsonResponse
 
 def index(request):
     form = UploadGraphForm()
@@ -47,3 +47,23 @@ def create_graph(request):
         return HttpResponseRedirect(reverse('index'))
     else:
         return Http404
+
+def ajax_get_node_data(request):
+    if request.is_ajax():
+        eid = request.GET.get('eid', None)
+        obj_type = request.GET.get('obj_type', None)
+        graph_id = request.GET.get('graph_id', None)
+        print(obj_type, eid)
+        if obj_type == 'node':
+            try:
+                obj = Node.objects.get(graph__id=graph_id,eid=eid)
+            except:
+                return JsonResponse({'info' : ''})
+        else:
+            try:
+                print('hereS')
+                obj = Group.objects.get(graph__id=graph_id,eid=eid)
+            except:
+                return JsonResponse({'info' : ''})
+        info = 'Node text=' + obj.text +  ' Database id=' + str(obj.id)
+        return  JsonResponse({'info' : info})

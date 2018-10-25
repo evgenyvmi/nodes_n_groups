@@ -98,6 +98,10 @@ h1, .h1 {
                     background-image: linear-gradient(#f1f1f1, #d5d5d5);
                     border: solid 1px;
             }
+
+        .graph-list-item {
+            position: relative;
+        }
         .graph-list-item-name{
             font-size: 20px;
         }
@@ -105,4 +109,22 @@ h1, .h1 {
             border: solid 1px;
             border-radius: 3px;
             background-color: #fffffff7;
+            display: none;
+        }
+
+        .graph-xml-like {
+            border: solid 1px;
+            border-radius: 3px;
+            background-color: #fffffff7;
+            display: none;
+        }
+
+        .show-tree {
+            margin-right: 10px;
+        }
+
+        .node-info {
+            position: absolute;
+            top: 50%;
+            right: 50%;
         }

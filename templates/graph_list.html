@@ -9,15 +9,15 @@
 {% block content %}
     <div class="graph-list">
         {% for graph in graph_list %}
-        {% build_structure graph as graph%}
+        {% build_tree graph as tree %}
             <div class="graph-list-item">
                 <span class="graph-list-item-name">Graph №{{graph.id}}</span>
-                <div><a id="show_tree" href="#">View as tree</a><a id="show_html" href="#">View as html</a></div>
+                <div><a class="show-tree" href="#">View as tree</a><a class="show-html" href="#">View as html</a></div>
                 <div class="graph-list-item-tree">
-                    {{ graph|safe }}
-                    <div class="node-info"></div>
+                    {{ tree|safe }}
                 </div>
-                <div class="graph-xml-like"> </div>
+                <div class="node-info"></div>
+                <div class="graph-xml-like"><pre>{{ tree }}</pre></div>
             </div>
         {% endfor %}
     </div>
@@ -28,14 +28,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
     <script type="text/javascript">
         $(function() {
+            // initializing jsTree
             $('.graph-list-item-tree').jstree();
             $('.graph-list-item-tree').on('ready.jstree', function() {
                 $('.graph-list-item-tree').jstree("open_all");
             });
-            $('#show_tree').on('click', function(e){
+            // ajax get node info on select
+            $('.graph-list-item-tree').on('select_node.jstree', function(){
+                // I know this is pretty bad, but there is really no other way of doing it
+                graph_id = $(this).siblings(".graph-list-item-name").text().split('№').pop();
+                eid = $(this).jstree("get_selected",true)[0].id.split('_').pop();
+                obj_type = $(this).jstree("get_selected",true)[0].id.split('_')[0];
+                info = $(this).siblings('.node-info');
+
+                $.get('/ajax_node_data', {'graph_id' : graph_id, 'eid' : eid, 'obj_type': obj_type})
+                    .done(function(data){
+                        info.text(data.info);
+                        info.fadeIn();
+                    });
+            })
+
+            $('.show-tree').on('click', function(e){
                 e.preventDefault()
-                $('#show_tree').fadeIn();
-                $('#show_html').fadeOut();
+                $(this).parent().siblings('.graph-list-item-tree').fadeIn();
+                $(this).parent().siblings('.graph-xml-like').fadeOut();
+            });
+            $('.show-html').on('click', function(e){
+                e.preventDefault()
+                $(this).parent().siblings('.graph-xml-like').fadeIn();
+                $(this).parent().siblings('.graph-list-item-tree').fadeOut();
+                $(this).parent().siblings('.node-info').fadeOut();
             });
         });
     </script>
